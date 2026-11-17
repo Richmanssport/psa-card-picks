@@ -58,7 +58,7 @@ const NAMES = ["Garrett","Russel","Alex","Andrew","Austin","Bin","Bedoya"];
 // Shared storage. Fill these in to save picks for everyone.
 const STORE = { type: "supabase", url: "https://omcwfmsbnqxfzioxldyk.supabase.co", key: "sb_publishable_1c_6RRnqWbyobp0vBUdn-w_O2xk6tKE" };
 
-const pretty = t => t.toLowerCase().replace(/\b([a-z])/g,c=>c.toUpperCase())
+const pretty = t => t.toLowerCase().replace(/(^|[\s\/\-(&!.])([a-z])/g,(m,a,c)=>a+c.toUpperCase())
   .replace(/\b(Ex|Gx|Vmax|Psa|Svp|Sv2a|Xy|Tg|Gg|Mep|Meg|Ssp|Scr|Tef|Twm|Obf|Svi|Paf|Dri|Jtg|Sfa|Pfl|Asc|Por|Blk|Wht|Cbb2|Rc|Nrsa|Op15-Eb04|Sm\d+|Xy\d+)\b/g,s=>s.toUpperCase())
   .replace(/\bEn-/g,"EN-");
 
