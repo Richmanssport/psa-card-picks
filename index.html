@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>PSA Card Picks</title>
+<style>
+  :root{
+    --bg:#000; --row:#0d0d0d; --line:#1f1f1f; --text:#f2f2f2; --muted:#8a8a8a;
+    --accent:#e8402f; --claimed:#141414;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter",system-ui,sans-serif;
+    -webkit-text-size-adjust:100%}
+  header{position:sticky;top:0;z-index:5;background:rgba(0,0,0,.92);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);padding:14px 16px 10px}
+  h1{margin:0;font-size:20px;letter-spacing:.02em}
+  .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;border:1px solid #333;background:#111;color:var(--text);
+    border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600}
+  .chip[aria-pressed="true"]{background:var(--text);color:#000;border-color:var(--text)}
+  .chip b{font-weight:500;opacity:.6;margin-left:4px}
+  .note{margin:10px 16px 0;padding:10px 12px;border:1px solid #3a2a00;background:#1a1300;
+    color:#f5c86b;font-size:13px;border-radius:10px}
+  .note[hidden]{display:none}
+  main{max-width:640px;margin:0 auto;padding:8px 0 60px}
+  .card{display:flex;gap:14px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .card.taken{background:var(--claimed)}
+  .thumb{flex:none;width:92px;aspect-ratio:76/104;border-radius:6px;overflow:hidden;background:#111;
+    box-shadow:0 0 0 1px #222}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .info{flex:1;min-width:0}
+  .cert{color:var(--muted);font-size:11px;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+  .title{font-size:14px;line-height:1.3;margin:3px 0 10px;font-weight:600;text-transform:none}
+  select{width:100%;appearance:none;-webkit-appearance:none;background:#161616 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 12px center;
+    color:var(--text);border:1px solid #333;border-radius:10px;padding:11px 34px 11px 12px;font-size:16px;font-weight:600}
+  select.set{border-color:var(--accent);background-color:#2a0f0b}
+  .empty{color:var(--muted);text-align:center;padding:40px 16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>PSA Card Picks</h1>
+  <div class="sub" id="sub">Value Bulk 65 · 114 cards</div>
+  <div class="chips" id="chips"></div>
+</header>
+<div class="note" id="note" hidden></div>
+<main id="list"></main>
+
+<script>
+const CARDS = [{"cert": "166343235", "title": "2026 ONE PIECE OP15-EB04-ADVENTURE ON KAMI'S ISLAND 014 BOA HANCOCK SPECIAL ALTERNATE ART", "img": "img/166343235.jpg"}, {"cert": "166343236", "title": "2025 POKEMON MEG EN-MEGA EVOLUTION 133 BULBASAUR ENHANCED BOOSTER BOX TOPPER", "img": "img/166343236.jpg"}, {"cert": "166343237", "title": "2019 POKEMON SUN & MOON BLACK STAR PROMOS SM230 FULL ART/CHARIZARD & BRAIXEN GX TAG TEAM GENERATIONS PREMIUM COLLECTION", "img": "img/166343237.jpg"}, {"cert": "166343238", "title": "2025 POKEMON SVP EN-SCARLET & VIOLET BLACK STAR PROMOS 174 EEVEE EX PRISMATIC EVOLUTIONS SUPER-PREMIUM COLLECTION", "img": "img/166343238.jpg"}, {"cert": "166343239", "title": "2002 POKEMON GERMAN NEO REVELATION 6 ENTEI-HOLO", "img": "img/166343239.jpg"}, {"cert": "166343240", "title": "2025 POKEMON PLAY! POKEMON PRIZE PACK: SERIES 7 026 GLACEON EX", "img": "img/166343240.jpg"}, {"cert": "166343241", "title": "2024 POKEMON SVP EN-SCARLET & VIOLET BLACK STAR PROMOS 132 GRENINJA EX SHROUDED FABLE SPECIAL ILLUSTRATION COLLECTION", "img": "img/166343241.jpg"}, {"cert": "166343242", "title": "1997 POKEMON JAPANESE ROCKET 88 GRIMER", "img": "img/166343242.jpg"}, {"cert": "166343243", "title": "2022 POKEMON SWORD & SHIELD ASTRAL RADIANCE TG12 FULL ART/HOOTHOOT", "img": "img/166343243.jpg"}, {"cert": "166343244", "title": "2000 POKEMON GYM CHALLENGE 19 KOGA-HOLO", "img": "img/166343244.jpg"}, {"cert": "166343245", "title": "2023-2024 POKEMON PLAY! POKEMON PRIZE PACK 138 LUGIA V", "img": "img/166343245.jpg"}, {"cert": "166343246", "title": "2023 POKEMON SVP EN-SCARLET & VIOLET BLACK STAR PROMOS 053 MEW EX 151 ULTRA-PREMIUM COLLECTION", "img": "img/166343246.jpg"}, {"cert": "166343247", "title": "2023 POKEMON SVP EN-SCARLET & VIOLET BLACK STAR PROMOS 053 MEW EX 151 ULTRA-PREMIUM COLLECTION", "img": "img/166343247.jpg"}, {"cert": "166343248", "title": "2023 POKEMON MEW EN-151 205 MEW EX HYPER RARE", "img": "img/166343248.jpg"}, {"cert": "166343249", "title": "2023 POKEMON MEW EN-151 205 MEW EX HYPER RARE", "img": "img/166343249.jpg"}, {"cert": "166343250", "title": "2023 POKEMON MEW EN-151 205 MEW EX HYPER RARE", "img": "img/166343250.jpg"}, {"cert": "166343251", "title": "1999 POKEMON JAPANESE VENDING 150 MEWTWO CD PROMO", "img": "img/166343251.jpg"}, {"cert": "166343252", "title": "2016 POKEMON XY BLACK STAR PROMOS XY125 FULL ART/MEWTWO EX SUPER-PREMIUM COLLECTION", "img": "img/166343252.jpg"}, {"cert": "166343253", "title": "2012 POKEMON BLACK & WHITE NEXT DESTINIES 98 FULL ART/MEWTWO EX", "img": "img/166343253.jpg"}, {"cert": "166343254", "title": "2015 POKEMON XY BREAKTHROUGH 158 FULL ART/MEWTWO EX", "img": "img/166343254.jpg"}, {"cert": "166343255", "title": "2015 POKEMON XY BREAKTHROUGH 159 FULL ART/M MEWTWO EX", "img": "img/166343255.jpg"}, {"cert": "166343256", "title": "2016 POKEMON XY EVOLUTIONS 108 FULL ART/MISTY'S DETERMINATION", "img": "img/166343256.jpg"}, {"cert": "166343257", "title": "1998 POKEMON JAPANESE GYM MISTY'S TEARS TRAINER", "img": "img/166343257.jpg"}, {"cert": "166343258", "title": "2017 POKEMON SUN & MOON BLACK STAR PROMOS SM110 ASH'S PIKACHU I CHOOSE YOU!", "img": "img/166343258.jpg"}, {"cert": "166343259", "title": "2023 POKEMON SVP EN-SCARLET & VIOLET BLACK STAR PROMOS 101 PIKACHU PLAY! POKEMON EVENT EXCLUSIVE", "img": "img/166343259.jpg"}, {"cert": "166343260", "title": "2023 POKEMON SVP EN-SCARLET & VIOLET BLACK STAR PROMOS 101 PIKACHU PLAY! POKEMON EVENT EXCLUSIVE", "img": "img/166343260.jpg"}, {"cert": "166343261", "title": "2014 POKEMON XY FLASHFIRE 105 FULL ART/POKEMON CENTER LADY", "img": "img/166343261.jpg"}, {"cert": "166343262", "title": "2004 POKEMON EX HIDDEN LEGENDS 98 REGIROCK EX-HOLO", "img": "img/166343262.jpg"}, {"cert": "166343263", "title": "2026 POKEMON POR EN-PERFECT ORDER 123 ROSA'S ENCOURAGEMENT SPECIAL ILLUSTRATION RARE", "img": "img/166343263.jpg"}, {"cert": "166343264", "title": "2017 POKEMON PREMIUM TRAINER XY COLLECTION PROMO 77a FULL ART/SHAYMIN", "img": "img/166343264.jpg"}, {"cert": "166343265", "title": "2017 POKEMON SUN & MOON BLACK STAR PROMOS SM70 SHINING HO-OH-HOLO SHINING LEGENDS ELITE TRAINER BOX", "img": "img/166343265.jpg"}, {"cert": "166343266", "title": "2016 POKEMON XY GENERATIONS RADIANT COLLECTION RC32 FULL ART/SYLVEON EX", "img": "img/166343266.jpg"}, {"cert": "166343267", "title": "2021 POKEMON SWORD & SHIELD BLACK STAR PROMOS 135 ZACIAN LV.X-HOLO CELEBRATIONS COLLECTION", "img": "img/166343267.jpg"}, {"cert": "166343268", "title": "2026 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 065 BARBARACLE PERFECT ORDER PRERELEASE-STAFF", "img": "img/166343268.jpg"}, {"cert": "166343269", "title": "2026 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 067 DOUBLADE PERFECT ORDER PRERELEASE-STAFF", "img": "img/166343269.jpg"}, {"cert": "166343270", "title": "2026 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 064 SERPERIOR PERFECT ORDER PRERELEASE-STAFF", "img": "img/166343270.jpg"}, {"cert": "166343271", "title": "2026 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 066 TYRANTRUM PERFECT ORDER PRERELEASE-STAFF", "img": "img/166343271.jpg"}, {"cert": "166343272", "title": "2026 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 077 GOODRA CHAOS RISING PRERELEASE-STAFF", "img": "img/166343272.jpg"}, {"cert": "166343273", "title": "2026 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 076 CROBAT CHAOS RISING PRERELEASE-STAFF", "img": "img/166343273.jpg"}, {"cert": "166343274", "title": "2026 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 075 AMPHAROS CHAOS RISING PRERELEASE-STAFF", "img": "img/166343274.jpg"}, {"cert": "166343275", "title": "2026 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 074 DELPHOX CHAOS RISING PRERELEASE-STAFF", "img": "img/166343275.jpg"}, {"cert": "166343276", "title": "2023 POKEMON 151 ULTRA-PREMIUM COLLECTION 205 MEW EX", "img": "img/166343276.jpg"}, {"cert": "166343277", "title": "2025 KAYOU NARUTO SMRITI COLLECTIBLE CARD NRSA-CHAPTER JIN ENGLISH SERIES 2 PR 003 NARUTO UZUMAKI PSA MAGAZINE EXCLUSIVE", "img": "img/166343277.jpg"}, {"cert": "166343278", "title": "2001 TOPPS GOLD LABEL CLASS 3 21 CHIPPER JONES GOLD", "img": "img/166343278.jpg"}, {"cert": "166343279", "title": "2025 POKEMON MEG EN-MEGA EVOLUTION 133 BULBASAUR ENHANCED BOOSTER BOX TOPPER", "img": "img/166343279.jpg"}, {"cert": "166343280", "title": "2025 POKEMON MEG EN-MEGA EVOLUTION 133 BULBASAUR ENHANCED BOOSTER BOX TOPPER", "img": "img/166343280.jpg"}, {"cert": "166343281", "title": "2025 POKEMON MEG EN-MEGA EVOLUTION 133 BULBASAUR ILLUSTRATION RARE", "img": "img/166343281.jpg"}, {"cert": "166343282", "title": "2025 POKEMON MEG EN-MEGA EVOLUTION 134 IVYSAUR ILLUSTRATION RARE", "img": "img/166343282.jpg"}, {"cert": "166343283", "title": "2025 POKEMON MEG EN-MEGA EVOLUTION 177 MEGA VENUSAUR EX SPECIAL ILLUSTRATION RARE", "img": "img/166343283.jpg"}, {"cert": "166343284", "title": "2024 POKEMON SFA EN-SHROUDED FABLE 078 PERSIAN ILLUSTRATION RARE", "img": "img/166343284.jpg"}, {"cert": "166343285", "title": "2025 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 027 HAUNTER MEGA GENGAR ex MEGA BATTLE DECK", "img": "img/166343285.jpg"}, {"cert": "166343286", "title": "2025 POKEMON JTG EN-JOURNEY TOGETHER 161 ARTICUNO ILLUSTRATION RARE", "img": "img/166343286.jpg"}, {"cert": "166343287", "title": "2024 POKEMON TEF EN-TEMPORAL FORCES 176 ARBOK ILLUSTRATION RARE", "img": "img/166343287.jpg"}, {"cert": "166343288", "title": "2024 POKEMON SVP EN-SCARLET & VIOLET BLACK STAR PROMOS 159 MAGNETON SURGING SPARKS ELITE TRAINER BOX", "img": "img/166343288.jpg"}, {"cert": "166343289", "title": "2023 POKEMON SVI EN-SCARLET & VIOLET 204 SLOWPOKE ILLUSTRATION RARE", "img": "img/166343289.jpg"}, {"cert": "166343290", "title": "2024 POKEMON TEF EN-TEMPORAL FORCES 177 GASTLY ILLUSTRATION RARE", "img": "img/166343290.jpg"}, {"cert": "166343291", "title": "2024 POKEMON SCR EN-STELLAR CROWN 148 SQUIRTLE ILLUSTRATION RARE", "img": "img/166343291.jpg"}, {"cert": "166343292", "title": "2023 POKEMON SVP EN-SCARLET & VIOLET BLACK STAR PROMOS 044 CHARMANDER OBSIDIAN FLAMES ELITE TRAINER BOX", "img": "img/166343292.jpg"}, {"cert": "166343293", "title": "2024 POKEMON SCR EN-STELLAR CROWN 143 BULBASAUR ILLUSTRATION RARE", "img": "img/166343293.jpg"}, {"cert": "166343294", "title": "2025 POKEMON DRI EN-DESTINED RIVALS 193 MISTY'S PSYDUCK ILLUSTRATION RARE", "img": "img/166343294.jpg"}, {"cert": "166343295", "title": "2023 POKEMON OBF EN-OBSIDIAN FLAMES 199 NINETALES ILLUSTRATION RARE", "img": "img/166343295.jpg"}, {"cert": "166343296", "title": "2023 POKEMON SWORD AND SHIELD CROWN ZENITH GG10 FULL ART/MEW", "img": "img/166343296.jpg"}, {"cert": "166343297", "title": "2024 POKEMON PAF EN-PALDEAN FATES 131 PIKACHU SHINY RARE", "img": "img/166343297.jpg"}, {"cert": "166343298", "title": "2019 POKEMON SUN & MOON TEAM UP 33 PIKACHU & ZEKROM GX", "img": "img/166343298.jpg"}, {"cert": "166343299", "title": "2024 POKEMON SSP EN-SURGING SPARKS 057 PIKACHU EX", "img": "img/166343299.jpg"}, {"cert": "166343300", "title": "2024 POKEMON SSP EN-SURGING SPARKS 219 PIKACHU EX ULTRA RARE", "img": "img/166343300.jpg"}, {"cert": "166343301", "title": "2024 POKEMON SSP EN-SURGING SPARKS 247 PIKACHU EX HYPER RARE", "img": "img/166343301.jpg"}, {"cert": "166343302", "title": "2025 POKEMON SVP EN-SCARLET & VIOLET BLACK STAR PROMOS 174 EEVEE EX PRISMATIC EVOLUTIONS SUPER-PREMIUM COLLECTION", "img": "img/166343302.jpg"}, {"cert": "166343303", "title": "2000 POKEMON GAME MOVIE ANCIENT MEW POKEMON 2000 MOVIE", "img": "img/166343303.jpg"}, {"cert": "166343304", "title": "2023 POKEMON MEW EN-151 203 ERIKA'S INVITATION SPECIAL ILLUSTRATION RARE", "img": "img/166343304.jpg"}, {"cert": "166343305", "title": "2025 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 023 MEGA CHARIZARD X EX MEGA CHARIZARD X ex ULTRA-PREMIUM COLLECTION", "img": "img/166343305.jpg"}, {"cert": "166343306", "title": "2023 POKEMON MEW EN-151 094 GENGAR", "img": "img/166343306.jpg"}, {"cert": "166343307", "title": "2023 POKEMON SVP EN-SCARLET & VIOLET BLACK STAR PROMOS 056 CHARIZARD EX CHARIZARD ex PREMIUM COLLECTION", "img": "img/166343307.jpg"}, {"cert": "166343308", "title": "2025 POKEMON DRI EN-DESTINED RIVALS 192 BLAZIKEN ILLUSTRATION RARE", "img": "img/166343308.jpg"}, {"cert": "166343309", "title": "2023 POKEMON JAPANESE SV2a-POKEMON CARD 151 176 POLIWHIRL ART RARE", "img": "img/166343309.jpg"}, {"cert": "166343310", "title": "2023 POKEMON JAPANESE SV2a-POKEMON CARD 151 185 CHARIZARD EX SUPER RARE", "img": "img/166343310.jpg"}, {"cert": "166343311", "title": "2023 POKEMON SWORD AND SHIELD CROWN ZENITH GG10 FULL ART/MEW", "img": "img/166343311.jpg"}, {"cert": "166343312", "title": "2023 POKEMON JAPANESE SV2a-POKEMON CARD 151 167 IVYSAUR ART RARE", "img": "img/166343312.jpg"}, {"cert": "166343313", "title": "2023 POKEMON JAPANESE SV2a-POKEMON CARD 151 173 PIKACHU ART RARE", "img": "img/166343313.jpg"}, {"cert": "166343314", "title": "2025 POKEMON PFL EN-PHANTASMAL FLAMES 115 MEGA LOPUNNY EX ULTRA RARE", "img": "img/166343314.jpg"}, {"cert": "166343315", "title": "2025 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 023 MEGA CHARIZARD X EX MEGA CHARIZARD X ex ULTRA-PREMIUM COLLECTION", "img": "img/166343315.jpg"}, {"cert": "166343316", "title": "2026 POKEMON ASC EN-ASCENDED HEROES 239 TEAM ROCKET'S DUGTRIO ILLUSTRATION RARE", "img": "img/166343316.jpg"}, {"cert": "166343317", "title": "2026 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 030 MEGA CHARIZARD Y EX MEGA CHARIZARD TIN", "img": "img/166343317.jpg"}, {"cert": "166343318", "title": "2026 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 029 MEGA CHARIZARD X EX MEGA CHARIZARD TIN", "img": "img/166343318.jpg"}, {"cert": "166343319", "title": "2023 POKEMON MEW EN-151 173 PIKACHU ILLUSTRATION RARE", "img": "img/166343319.jpg"}, {"cert": "166343320", "title": "2023 POKEMON SVP EN-SCARLET & VIOLET BLACK STAR PROMOS 027 PIKACHU PALDEA EVOLVED ELITE TRAINER BOX", "img": "img/166343320.jpg"}, {"cert": "166343321", "title": "2025 POKEMON SVP EN-SCARLET & VIOLET BLACK STAR PROMOS 203 TEAM ROCKET'S WOBBUFFET DESTINED RIVALS ELITE TRAINER BOX", "img": "img/166343321.jpg"}, {"cert": "166343322", "title": "2025 POKEMON MEG EN-MEGA EVOLUTION 133 BULBASAUR ENHANCED BOOSTER BOX TOPPER", "img": "img/166343322.jpg"}, {"cert": "166343323", "title": "2024 POKEMON SSP EN-SURGING SPARKS 242 ALOLAN EXEGGUTOR EX SPECIAL ILLUSTRATION RARE", "img": "img/166343323.jpg"}, {"cert": "166343324", "title": "2024 POKEMON SSP EN-SURGING SPARKS 208 ALOLAN DUGTRIO ILLUSTRATION RARE", "img": "img/166343324.jpg"}, {"cert": "166343325", "title": "2024 POKEMON SSP EN-SURGING SPARKS 219 PIKACHU EX ULTRA RARE", "img": "img/166343325.jpg"}, {"cert": "166343326", "title": "2024 POKEMON TWM EN-TWILIGHT MASQUERADE 181 HISUIAN GROWLITHE ILLUSTRATION RARE", "img": "img/166343326.jpg"}, {"cert": "166343327", "title": "2023 POKEMON MEW EN-151 174 NIDOKING ILLUSTRATION RARE", "img": "img/166343327.jpg"}, {"cert": "166343328", "title": "2023 POKEMON MEW EN-151 198 VENUSAUR EX SPECIAL ILLUSTRATION RARE", "img": "img/166343328.jpg"}, {"cert": "166343329", "title": "2023 POKEMON MEW EN-151 171 WARTORTLE ILLUSTRATION RARE", "img": "img/166343329.jpg"}, {"cert": "166343330", "title": "2025 POKEMON BLK EN-BLACK BOLT 147 HAXORUS ILLUSTRATION RARE", "img": "img/166343330.jpg"}, {"cert": "166343331", "title": "2024 POKEMON SCR EN-STELLAR CROWN 148 SQUIRTLE ILLUSTRATION RARE", "img": "img/166343331.jpg"}, {"cert": "166343332", "title": "2024 POKEMON SCR EN-STELLAR CROWN 143 BULBASAUR ILLUSTRATION RARE", "img": "img/166343332.jpg"}, {"cert": "166343333", "title": "2002 POKEMON EXPEDITION 15 GENGAR-HOLO", "img": "img/166343333.jpg"}, {"cert": "166343334", "title": "2025 POKEMON WHT EN-WHITE FLARE 166 RESHIRAM EX SPECIAL ILLUSTRATION RARE", "img": "img/166343334.jpg"}, {"cert": "166343335", "title": "2002 POKEMON LEGENDARY COLLECTION 11 GENGAR-REVERSE FOIL", "img": "img/166343335.jpg"}, {"cert": "166343336", "title": "2026 POKEMON ASC EN-ASCENDED HEROES 230 VIKAVOLT ILLUSTRATION RARE", "img": "img/166343336.jpg"}, {"cert": "166343337", "title": "2026 POKEMON POR EN-PERFECT ORDER 099 RATICATE ILLUSTRATION RARE", "img": "img/166343337.jpg"}, {"cert": "166343338", "title": "2025 POKEMON MEP EN-MEGA EVOLUTION BLACK STAR PROMOS 024 ORICORIO EX MEGA CHARIZARD X ex ULTRA-PREMIUM COLLECTION", "img": "img/166343338.jpg"}, {"cert": "166343339", "title": "1999 POKEMON GAME 10 MEWTWO-HOLO", "img": "img/166343339.jpg"}, {"cert": "166343340", "title": "2023 POKEMON MEW EN-151 193 MEW EX ULTRA RARE", "img": "img/166343340.jpg"}, {"cert": "166343341", "title": "2024 POKEMON SCR EN-STELLAR CROWN 158 LAPRAS EX ULTRA RARE", "img": "img/166343341.jpg"}, {"cert": "166343342", "title": "2025 KAYOU NARUTO SMRITI COLLECTIBLE CARD NRSA-CHAPTER JIN ENGLISH SERIES 2 PR 003 NARUTO UZUMAKI PSA MAGAZINE EXCLUSIVE", "img": "img/166343342.jpg"}, {"cert": "166343343", "title": "2026 POKEMON ASC EN-ASCENDED HEROES 245 GALARIAN OBSTAGOON ILLUSTRATION RARE", "img": "img/166343343.jpg"}, {"cert": "166343344", "title": "2025 POKEMON SIMPLIFIED CHINESE CBB2 C-GEM PACK VOL 2 09 ESPEON", "img": "img/166343344.jpg"}, {"cert": "166343345", "title": "2025 POKEMON BLK EN-BLACK BOLT 059 KROOKODILE MASTER BALL REVERSE HOLO", "img": "img/166343345.jpg"}, {"cert": "166343346", "title": "2022 POKEMON SWORD & SHIELD ASTRAL RADIANCE 194 FULL ART/MACHAMP VMAX SECRET", "img": "img/166343346.jpg"}, {"cert": "166343347", "title": "2019 POKEMON SUN & MOON HIDDEN FATES 31 MEWTWO GX", "img": "img/166343347.jpg"}, {"cert": "166343348", "title": "2026 POKEMON ASC EN-ASCENDED HEROES 271 MEGA DRAGONITE EX MEGA ATTACK", "img": "img/166343348.jpg"}];
+const NAMES = ["Garrett","Russel","Alex","Andrew","Austin","Bin","Bedoya"];
+// Shared storage. Fill these in to save picks for everyone.
+const STORE = { type: "supabase", url: "https://omcwfmsbnqxfzioxldyk.supabase.co", key: "sb_publishable_1c_6RRnqWbyobp0vBUdn-w_O2xk6tKE" };
+
+const pretty = t => t.toLowerCase().replace(/\b([a-z])/g,c=>c.toUpperCase())
+  .replace(/\b(Ex|Gx|Vmax|Psa|Svp|Sv2a|Xy|Tg|Gg|Mep|Meg|Ssp|Scr|Tef|Twm|Obf|Svi|Paf|Dri|Jtg|Sfa|Pfl|Asc|Por|Blk|Wht|Cbb2|Rc|Nrsa|Op15-Eb04|Sm\d+|Xy\d+)\b/g,s=>s.toUpperCase())
+  .replace(/\bEn-/g,"EN-");
+
+let picks = {};
+let filter = "All";
+
+const store = (() => {
+  if (STORE.type === "supabase" && !STORE.url.startsWith("__")) {
+    const h = {apikey:STORE.key, "Content-Type":"application/json"};
+    return {
+      shared:true,
+      async load(){ const r=await fetch(STORE.url+"/rest/v1/picks?select=cert,name",{headers:h});
+        if(!r.ok) throw new Error(r.status); const o={}; (await r.json()).forEach(x=>o[x.cert]=x.name); return o; },
+      async set(cert,name){
+        const r = name
+          ? await fetch(STORE.url+"/rest/v1/picks",{method:"POST",headers:{...h,Prefer:"resolution=merge-duplicates"},body:JSON.stringify({cert,name})})
+          : await fetch(STORE.url+"/rest/v1/picks?cert=eq."+cert,{method:"DELETE",headers:h});
+        if(!r.ok) throw new Error(r.status);
+      }
+    };
+  }
+  return {
+    shared:false,
+    async load(){ try{return JSON.parse(localStorage.getItem("psaPicks")||"{}")}catch(e){return {}} },
+    async set(){ try{localStorage.setItem("psaPicks",JSON.stringify(picks))}catch(e){} }
+  };
+})();
+
+function chips(){
+  const counts = {};
+  Object.values(picks).forEach(n=>counts[n]=(counts[n]||0)+1);
+  const open = CARDS.length - Object.keys(picks).length;
+  const items = [["All",CARDS.length],["Open",open],...NAMES.map(n=>[n,counts[n]||0])];
+  document.getElementById("chips").innerHTML = items.map(([n,c]) =>
+    `<button class="chip" aria-pressed="${filter===n}" data-f="${n}">${n}<b>${c}</b></button>`).join("");
+  document.getElementById("sub").textContent =
+    `Value Bulk 65 · ${CARDS.length} cards · ${CARDS.length-open} claimed`;
+}
+
+function render(){
+  chips();
+  const shown = CARDS.filter(c => filter==="All" || (filter==="Open" ? !picks[c.cert] : picks[c.cert]===filter));
+  const list = document.getElementById("list");
+  if(!shown.length){ list.innerHTML = `<div class="empty">No cards here yet.</div>`; return; }
+  list.innerHTML = shown.map(c => {
+    const who = picks[c.cert] || "";
+    return `<div class="card ${who?"taken":""}">
+      <div class="thumb"><img src="${c.img}" alt="${pretty(c.title)}" loading="lazy"></div>
+      <div class="info">
+        <div class="cert">CERT #${c.cert}</div>
+        <div class="title">${pretty(c.title)}</div>
+        <select data-cert="${c.cert}" class="${who?"set":""}" aria-label="Who gets this card">
+          <option value="">Pick a name</option>
+          ${NAMES.map(n=>`<option ${n===who?"selected":""}>${n}</option>`).join("")}
+        </select>
+      </div></div>`;
+  }).join("");
+}
+
+document.addEventListener("change", async e => {
+  const s = e.target.closest("select[data-cert]"); if(!s) return;
+  const cert = s.dataset.cert, name = s.value;
+  if(name) picks[cert]=name; else delete picks[cert];
+  s.classList.toggle("set",!!name); s.closest(".card").classList.toggle("taken",!!name);
+  chips();
+  try{ await store.set(cert,name); }catch(err){ showNote("Couldn't save that pick. Check your connection and try again."); }
+});
+document.addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if(!b) return;
+  filter = b.dataset.f; render(); window.scrollTo({top:0});
+});
+function showNote(t){ const n=document.getElementById("note"); n.textContent=t; n.hidden=!t; }
+
+(async () => {
+  try{ picks = await store.load(); }catch(e){ showNote("Couldn't load picks right now."); }
+  if(!store.shared) showNote("Preview mode: picks only save on this phone until shared saving is turned on.");
+  render();
+  if(store.shared) setInterval(async()=>{
+    if(document.activeElement && document.activeElement.tagName==="SELECT") return;
+    try{ const p=await store.load(); if(JSON.stringify(p)!==JSON.stringify(picks)){picks=p;render();} }catch(e){}
+  },15000);
+})();
+</script>
+</body>
+</html>
